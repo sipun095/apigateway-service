@@ -1,0 +1,44 @@
+server:
+  port: 9091
+spring:
+  application:
+    name: apigateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - http://localhost:5173
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+            allowedHeaders:
+              - '*'
+            allowCredentials: true
+      routes:
+        - id: auth_service
+          uri: lb://authentication-service
+          predicates:
+            - Path= /api/auth/**
+        - id: book_service
+          uri: lb://book-management-service
+          predicates:
+            - Path= /api/books/**
+        - id: order_service
+          uri: lb://ORDER_SERVICE
+          predicates:
+            - Path= /api/orders/**
+management:
+  health:
+    refresh:
+      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:9090/eureka}
